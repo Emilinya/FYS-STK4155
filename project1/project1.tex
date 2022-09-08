@@ -1,0 +1,177 @@
+\documentclass{article}
+ 
+\usepackage[margin=4cm]{geometry}
+\usepackage{physics, amssymb}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage{parskip}
+\usepackage{minted}
+\usepackage{esint}
+\usepackage{hyperref} 
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	filecolor=magenta,
+	urlcolor=cyan,
+	pdftitle={Overleaf Example},
+	pdfpagemode=FullScreen,
+}
+
+\begin{document}
+
+\author{Emilie Dørum}
+\title{FYS-STK4155 - Project 1}
+
+\date{\today}
+\maketitle
+
+\newcommand{\dunder}[1] {
+	\underline{\underline{#1}} 
+}
+
+\newcommand{\mat}[1] {
+	\begin{bmatrix}#1\end{bmatrix}
+}
+
+\newcommand{\bs}[1] {
+	\boldsymbol{#1}
+}
+
+\newcommand{\bhat}[1] {
+	\hat{\boldsymbol{#1}}
+}
+
+\newcommand{\vary}[1] {
+	\text{Var}\left(#1\right)
+}
+
+\newcommand{\expy}[1] {
+	\mathbb{E}\left(#1\right)
+}
+
+\newcommand{\avg}[1] {
+	\left<#1\right>
+}
+
+\newcommand{\nroot}[2][2]{
+	\sqrt[\uproot{2}\scriptstyle #1]{#2}
+}
+
+\newcommand{\navsection}[1]{
+	\section*{#1}
+	\addcontentsline{toc}{section}{#1}
+}
+\newcommand{\navsubsection}[1]{
+	\subsection*{#1}
+	\addcontentsline{toc}{subsection}{#1} 
+}
+\newcommand{\navsubsubsection}[1]{
+	\subsubsection*{#1}
+	\addcontentsline{toc}{subsubsection}{#1}
+}
+
+\definecolor{bg}{rgb}{0.95, 0.95, 0.95}
+
+\navsection{Temp}
+Franke's function:
+\begin{align*}
+    f(x, y) &= \frac{3}{4}\exp(-\frac{(9x-2)^2}{4} - \frac{(9y-2)^2}{4}) + \frac{3}{4}\exp(-\frac{(9x+1)^2}{49} - \frac{9y+1}{10}) \\
+    &+ \frac{1}{2}\exp(-\frac{(9x-7)^2}{4} - \frac{(9y-3)^2}{4}) - \frac{1}{5}\exp(-(9x-4)^2 - (9y-7)^2)
+\end{align*}
+$x \in [0, 1]$
+
+\navsubsection{Part a)}
+We assume that there exists a continuous function $f(\bs{x})$
+and a normal distributed error $\bs{\varepsilon} \sim N(0, \sigma^2)$ such that our data is described by
+$$\bs{y} = f(\bs{x}) + \bs{\varepsilon}$$
+We want to approximate this function with our model from the solution of the
+ordinary least squares (OLS) linear regression equations. This means that
+our function $f$ is approximated by $\bs{\tilde{y}}$ where we minimized 
+$(\bs{y} - \bs{\tilde{y}})^2$, with
+$$\bs{\tilde{y}} = \bs{X}\bs{\beta}$$
+Where $\bs{X}$ is the design matrix.
+
+We want to show that the expectation value of $\bs{y}$ for a given element $i$ is
+$$\expy{y_i} = \sum_j x_{ij}\beta_j = (\bs{X}\bs{\beta})_i$$
+and that its variance is
+$$\vary{y_i} = \sigma^2$$
+We use the definition of $y_i$, $y_i = (\bs{X}\bs{\beta})_i + \epsilon_i$. This gives
+\begin{align*}
+	\expy{y_i} &= \expy{(\bs{X}\bs{\beta})_i + \epsilon_i} \\
+	&= \expy{(\bs{X}\bs{\beta})_i} + \expy{\epsilon_i} \\
+\end{align*}
+We assume that our x-values are not stocastic. Therefore $\expy{(\bs{X}\bs{\beta})_i} = (\bs{X}\bs{\beta})_i$.
+We also assume that $\bs{\varepsilon} \sim N(0, \sigma^2)$, so $\expy{\epsilon_i} = 0$.
+We therefore get $\expy{y_i} = (\bs{X}\bs{\beta})_i\ \ \ \square$. \\
+To find $\vary{y_i}$ we use the definition of the variance, $\vary{x} = \expy{(x - \expy{x})^2}$. This gives
+\begin{align*}
+	\vary{y_i} &= \expy{(y_i - \expy{y_i})^2} \\
+	&= \expy{((\bs{X}\bs{\beta})_i + \epsilon_i - (\bs{X}\bs{\beta})_i)^2} \\
+	&= \expy{\epsilon_i^2} \\
+	&= \sigma^2\ \ \ \square \\
+\end{align*}
+Where we used our previous result and our assumption that $\bs{\varepsilon} \sim N(0, \sigma^2)$.
+
+
+We now want to find the expectation value and variance of $\bs{\hat{\beta}}$.
+We know that the $\bs{\hat{\beta}}$ that minimizes
+$(\bs{y} - \bs{\tilde{y}})^2$ is 
+$$\bs{\hat{\beta}} = \qty(\bs{X}^T\bs{X})^{-1}\bs{X}^T\bs{y}$$
+Using this we can find the expectation value and variance:
+\begin{align*}
+	\expy{\bs{\hat{\beta}}} &= \mathbb{E}\qty(\qty(\bs{X}^T\bs{X})^{-1}\bs{X}^T\bs{y}) \\
+	&= \qty(\bs{X}^T\bs{X})^{-1}\bs{X}^T\expy{\bs{y}} \\
+	&= \qty(\bs{X}^T\bs{X})^{-1}\bs{X}^T\bs{X}\bs{\beta} \\
+	&= \bs{\beta} \\
+	\vary{\bs{\hat{\beta}}} &= \mathbb{E}\qty((\bs{\hat{\beta}} - \expy{\bs{\hat{\beta}}})^2) \\
+	&= \mathbb{E}\qty((\bs{\hat{\beta}} - \bs{\beta})^2) \\
+	&= \mathbb{E}\qty(\qty(\qty(\bs{X}^T\bs{X})^{-1}\bs{X}^T\bs{y} - \bs{\beta})^2) \\
+	&= \mathbb{E}\qty(\qty(\qty(\bs{X}^T\bs{X})^{-1}\bs{X}^T(\bs{X}\bs{\beta} + \bs{\epsilon}) - \bs{\beta})^2) \\
+	&= \mathbb{E}\qty(\qty(\bs{\beta} + \qty(\bs{X}^T\bs{X})^{-1}\bs{X}^T\bs{\epsilon} - \bs{\beta})^2) \\
+	&= \qty(\qty(\bs{X}^T\bs{X})^{-1}\bs{X}^T)^2\mathbb{E}\qty(\bs{\epsilon}^2) \\
+	&= \qty(\qty(\bs{X}^T\bs{X})^{-1}\bs{X}^T)^2\sigma^2 \\
+	&= \sigma^2\qty(\bs{X}^T\bs{X})^{-1} \\
+\end{align*}
+
+\navsection{Abstract}
+The abstract gives the reader a quick overview of what has been done and the most important results. Try to be to the point and state your main findings. It could be structured as follows o Short introduction to topic and why its important o Introduce a challenge or unresolved issue with the topic (that you will try to solve) o What have you done to solve this o Main Results o The implications
+The report, the introduction
+
+\navsection{Introduction}
+Motivate the reader, the first part of the introduction gives always a motivation and tries to give the overarching ideas
+What I have done
+The structure of the report, how it is organized etc
+
+\navsection{Method}
+Describe the methods and algorithms
+You need to explain how you implemented the methods and also say something about the structure of your algorithm and present some parts of your code
+You should plug in some calculations to demonstrate your code, such as selected runs used to validate and verify your results. The latter is extremely important!! A reader needs to understand that your code reproduces selected benchmarks and reproduces previous results, either numerical and/or well-known closed form expressions.
+
+\navsection{Results}
+Present your results
+Give a critical discussion of your work and place it in the correct context.
+Relate your work to other calculations/studies
+An eventual reader should be able to reproduce your calculations if she/he wants to do so. All input variables should be properly explained.
+Make sure that figures and tables should contain enough information in their captions, axis labels etc so that an eventual reader can gain a first impression of your work by studying figures and tables only.
+
+\navsection{Conclusion}
+    State your main findings and interpretations
+    Try as far as possible to present perspectives for future work
+    Try to discuss the pros and cons of the methods and possible improvements
+
+\navsection{Appendix}
+Additional calculations used to validate the codes
+Selected calculations, these can be listed with few comments
+Listing of the code if you feel this is necessary
+
+You can consider moving parts of the material from the methods section to the appendix. You can also place additional material on your webpage or GitHub page..
+
+\navsection{References}
+Give always references to material you base your work on, either scientific articles/reports or books.
+Refer to articles as: name(s) of author(s), journal, volume (boldfaced), page and year in parenthesis.
+Refer to books as: name(s) of author(s), title of book, publisher, place and year, eventual page numbers
+
+
+\end{document}
