@@ -12,7 +12,6 @@ def frankeFunction(x,y):
     term4 = -0.2*np.exp(-(9*x-4)**2 - (9*y-7)**2)
     return term1 + term2 + term3 + term4
 
-
 if __name__ == "__main__":
     fig = plt.figure()
     ax = plt.axes(projection='3d')
@@ -20,6 +19,9 @@ if __name__ == "__main__":
     # Make data.
     x = np.linspace(0, 1, 1000)
     y = np.linspace(0, 1, 1000)
+
+    x_grid, y_grid = np.meshgrid(x, y)
+    z = frankeFunction(x_grid, y_grid)
 
     # Plot the surface.
     surf = ax.plot_surface(x, y, z, cmap="plasma", linewidth=0, antialiased=False)
@@ -38,4 +40,4 @@ if __name__ == "__main__":
     cbar.set_ticks(np.linspace(np.round(np.min(z), 1), np.round(np.max(z), 2), 10))
 
     ax.view_init(azim=30)
-    plt.savefig("FrankeFunction.png", dpi=200)
+    plt.savefig("imgs/FrankeFunction.png", dpi=200)
