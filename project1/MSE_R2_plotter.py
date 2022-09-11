@@ -1,5 +1,5 @@
 from linfitUtils import get_design_matrix, get_beta, test_fit
-from franke_func import frankeFunction
+from franke_func import initialize_franke
 import matplotlib.pyplot as plt
 import numpy as np
 import time
@@ -51,9 +51,7 @@ def plot_MSE_R2_fig(x_grid, y_grid, z_grid, max_degree, filename, scaling=False)
     return degree_list, R2_test_list
 
 for n in [5, 20, 100, 400]:
-    x_ray = np.linspace(0, 1, n)
-    x_grid, y_grid = np.meshgrid(x_ray, x_ray)
-    z_grid = frankeFunction(x_grid, y_grid)
+    x_grid, y_grid, z_grid = initialize_franke(n)
 
     print(f"n = {n}:")
     degree_list, R2_test_noscale = plot_MSE_R2_fig(x_grid, y_grid, z_grid, 6, f"imgs/MSE_R2_comp/MSE_R2_n={n}_noscale.png")

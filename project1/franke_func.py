@@ -1,9 +1,8 @@
+from matplotlib.ticker import LinearLocator, FormatStrFormatter
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from matplotlib import cm
-from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import numpy as np
-from random import random, seed
 
 def frankeFunction(x,y):
     term1 = 0.75*np.exp(-(0.25*(9*x-2)**2) - 0.25*((9*y-2)**2))
@@ -11,6 +10,11 @@ def frankeFunction(x,y):
     term3 = 0.5*np.exp(-(9*x-7)**2/4.0 - 0.25*((9*y-3)**2))
     term4 = -0.2*np.exp(-(9*x-4)**2 - (9*y-7)**2)
     return term1 + term2 + term3 + term4
+
+def initialize_franke(n):
+    x_ray = np.linspace(0, 1, n)
+    x_grid, y_grid = np.meshgrid(x_ray, x_ray)
+    return x_grid, y_grid, frankeFunction(x_grid, y_grid)
 
 if __name__ == "__main__":
     fig = plt.figure()
