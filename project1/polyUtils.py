@@ -2,11 +2,9 @@ from cgi import test
 import numpy as np
 
 def power_itr(d):
-    for c in range(d+1):
-        for y in range(c+1):
-            for x in range(c+1):
-                if x + y == c:
-                    yield (x, y)
+    for k in range(d+1):
+        for i in range(k+1):
+            yield (k-i, i)
 
 def poly_generator(d, beta):
     if len(list(poly_generator(d))) != len(beta):

@@ -17,7 +17,7 @@ def initialize_franke(n):
     return x_grid, y_grid, frankeFunction(x_grid, y_grid)
 
 if __name__ == "__main__":
-    fig = plt.figure()
+    fig = plt.figure(constrained_layout=True)
     ax = plt.axes(projection='3d')
 
     # Make data.
@@ -25,10 +25,10 @@ if __name__ == "__main__":
     y = np.linspace(0, 1, 1000)
 
     x_grid, y_grid = np.meshgrid(x, y)
-    z = frankeFunction(x_grid, y_grid)
+    z_grid = frankeFunction(x_grid, y_grid)
 
     # Plot the surface.
-    surf = ax.plot_surface(x, y, z, cmap="plasma", linewidth=0, antialiased=False)
+    surf = ax.plot_surface(x_grid, y_grid, z_grid, cmap="plasma", linewidth=0, antialiased=False)
 
     ax.set_xlabel("x []")
     ax.set_ylabel("y []")
@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
     # Add a color bar which maps values to colors.
     cbar = fig.colorbar(surf)
-    cbar.set_ticks(np.linspace(np.round(np.min(z), 1), np.round(np.max(z), 2), 10))
+    cbar.set_ticks(np.linspace(np.round(np.min(z_grid), 1), np.round(np.max(z_grid), 2), 10))
 
     ax.view_init(azim=30)
     plt.savefig("imgs/FrankeFunction.png", dpi=200)
