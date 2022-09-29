@@ -7,7 +7,7 @@ def power_itr(d):
             yield (k-i, i)
 
 def poly_generator(d, beta):
-    if len(list(poly_generator(d))) != len(beta):
+    if len(beta) != (d + 2) * (d + 1) / 2:
         print(">:(")
         exit(1)
 

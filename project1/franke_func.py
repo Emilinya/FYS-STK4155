@@ -1,7 +1,5 @@
-from matplotlib.ticker import LinearLocator, FormatStrFormatter
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
-from matplotlib import cm
 import numpy as np
 
 def frankeFunction(x,y):
@@ -20,28 +18,20 @@ if __name__ == "__main__":
     fig = plt.figure(constrained_layout=True)
     ax = plt.axes(projection='3d')
 
-    # Make data.
-    x = np.linspace(0, 1, 1000)
-    y = np.linspace(0, 1, 1000)
+    # make data
+    x_grid, y_grid, z_grid = initialize_franke(1000)
 
-    x_grid, y_grid = np.meshgrid(x, y)
-    z_grid = frankeFunction(x_grid, y_grid)
-
-    # Plot the surface.
+    # plot the surface.
     surf = ax.plot_surface(x_grid, y_grid, z_grid, cmap="plasma", linewidth=0, antialiased=False)
 
+    # set labels
     ax.set_xlabel("x []")
     ax.set_ylabel("y []")
     ax.set_zlabel("z []")
 
-    # Customize the z axis.
-    ax.set_zlim(-0.10, 1.40)
-    ax.zaxis.set_major_locator(LinearLocator(10))
-    ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
-
-    # Add a color bar which maps values to colors.
+    # add a color bar which maps values to colors.
     cbar = fig.colorbar(surf)
-    cbar.set_ticks(np.linspace(np.round(np.min(z_grid), 1), np.round(np.max(z_grid), 2), 10))
+    cbar.set_ticks(np.linspace(np.ceil(np.min(z_grid)*100)/100, np.floor(np.max(z_grid)*100)/100, 10))
 
     ax.view_init(azim=30)
-    plt.savefig("imgs/FrankeFunction.png", dpi=200)
+    plt.savefig("imgs/franke/FrankeFunction.png", dpi=200)
