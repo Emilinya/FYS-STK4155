@@ -11,11 +11,11 @@ def print_compare(a, b):
         a = a.flatten()
         b = b.flatten()
         abss = [f"{abs(ai - bi):.3g}" for ai, bi in zip(a, b)]
-        rels = ["0 %" if ai==0 and bi==0 else "∞ %" if bi==0 else f"{abs(ai - bi)/abs(bi)*100:.3g} %" for ai, bi in zip(a, b)]
-        print(f"  abs:({' '.join(abss)}), rel:({', '.join(rels)})")
+        rels = ["0%" if ai==0 and bi==0 else "∞%" if bi==0 else f"{abs(ai - bi)/abs(bi)*100:.3g}%" for ai, bi in zip(a, b)]
+        print(f"  abs:({', '.join(abss)}), rel:({', '.join(rels)})")
         return
     except:
-        print(f"  abs:{abs(a - b):.3g}, rel:{abs(a - b)/abs(b)*100:.3g} %")
+        print(f"  abs:{abs(a - b):.3g}, rel:{abs(a - b)/abs(b)*100:.3g}%")
 
 def f(x):
     term1 = 0.5*np.exp(-(9*x-7)**2/4.0)

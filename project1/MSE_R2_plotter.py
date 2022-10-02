@@ -1,4 +1,4 @@
-from linfitUtils import get_2d_design_matrix, get_beta, test_fit
+from linfitUtils import SplitData, LinFit
 from franke_func import initialize_franke
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -9,13 +9,17 @@ def plot_MSE_R2(
     degree_list, MSE_train_list, MSE_test_list, 
     R2_train_list, R2_test_list, title, filename
 ):
-    plt.figure(figsize=(7, 5), constrained_layout=True)
-    plt.plot(degree_list, MSE_train_list, label="training MSE")
-    plt.plot(degree_list, R2_train_list, label="training R2")
-    plt.plot(degree_list, MSE_test_list, label="testing MSE")
-    plt.plot(degree_list, R2_test_list, label="testing R2")
+    plt.figure(figsize=(6, 4), constrained_layout=True)
+    plt.plot(degree_list, MSE_train_list, ".--", label="train MSE")
+    plt.plot(degree_list, R2_train_list, ".--", label="train R2")
+    plt.plot(degree_list, MSE_test_list, ".--", label="test MSE")
+    plt.plot(degree_list, R2_test_list, ".--", label="test R2")
     plt.xlabel("polynomial degree []")
     plt.ylabel("y []")
+    if "no_noise" in title:
+        plt.ylim(-0.1, 1.1)
+    else:
+        plt.ylim(-0.5, 1.5)
     plt.title(title)
     plt.legend()
     plt.savefig(filename, dpi=200)
@@ -50,24 +54,24 @@ def linfit_franke(n, max_degree, add_noise, normalize):
 
     start = time.time()
     for i, poly_degree in enumerate(degree_list):
-        print(f"\r  {noise_str} {normalize_str} {i}/{max_degree}", end="")
+        print(f"\r{noise_str} {normalize_str} {i}/{max_degree}", end="")
 
-        X_train, X_test, y_train, y_test = get_2d_design_matrix(
-            poly_degree, x_grid, y_grid, z_grid, normalize
-        )
-        beta = get_beta(X_train, y_train)
+        split_data = SplitData.from_2d_polynomial(poly_degree, x_grid, y_grid, z_grid, normalize)
+        linfit = LinFit(split_data)
+    
+        beta = linfit.get_beta()
         beta_grid[i, :len(beta)] = beta
         
-        MSE_train, R2_train = test_fit(y_train, X_train, beta)
+        MSE_train, R2_train = linfit.test_train_fit(beta)
         MSE_train_list.append(MSE_train)
         R2_train_list.append(R2_train)
 
-        MSE_test, R2_test = test_fit(y_test, X_test, beta)
+        MSE_test, R2_test = linfit.test_fit(beta)
         MSE_test_list.append(MSE_test)
         R2_test_list.append(R2_test)
     print(f" - {time.time() - start:.3f} s")
 
-    MSE_R2_title = f"accuracy of fits, {normalize_str}, {noise_str}, n={n}"    
+    MSE_R2_title = f"{normalize_str},{noise_str},n={n}"    
     plot_MSE_R2(
         degree_list, MSE_train_list, MSE_test_list, 
         R2_train_list, R2_test_list, MSE_R2_title, filename
@@ -76,20 +80,11 @@ def linfit_franke(n, max_degree, add_noise, normalize):
     beta_title = f"optimal $\\beta$ of fits, {normalize_str}, {noise_str}, n={n}"
     plot_beta(beta_grid, beta_title, filename)
 
-    return degree_list, R2_test_list
-
+n = 15
 max_degree = 5
 np.random.seed(1)
-for n in [5, 1000]:
-    print(f"n = {n}:")
-    for add_noise in [False, True]:
-        R2_list = []
-        for normalize in [False, True]:
-            degree_list, R2_test = linfit_franke(n, max_degree, add_noise, normalize)
-            R2_list.append(np.array(R2_test))
 
-        plt.figure(figsize=(7, 5), constrained_layout=True)
-        plt.plot(degree_list, R2_list[0] - R2_list[1], label="R2 not normalized - R2 normalized")
-        plt.legend()
-        plt.savefig(f"imgs/franke/MSE_R2_comp/n={n}_{'noise' if add_noise else 'no_noise'}_diff.png", dpi=200)
-        plt.clf()
+for add_noise in [False, True]:
+    R2_list = []
+    for normalize in [False, True]:
+        linfit_franke(n, max_degree, add_noise, normalize)
