@@ -35,7 +35,7 @@ if __name__ == "__main__":
     np.random.seed(1337)
 
     n = 15
-    max_degree = 17
+    max_degree = 16
     x_grid, y_grid, z_grid = initialize_franke(n)
     degree_list = list(range(max_degree+1))
     MSE_test_ray = np.zeros(len(degree_list))
@@ -50,6 +50,7 @@ if __name__ == "__main__":
     plt.plot(degree_list, MSE_test_ray, ".-", label="test MSE")
     plt.plot(degree_list, MSE_train_ray, ".-", label="train MSE")
     plt.legend()
+    plt.ylim(-0.05, 1.9)
     plt.xlabel("polynomial degree []")
     plt.ylabel("MSE []")
     plt.title(f"Overfitting example, ${n}^2$ datapoints")
