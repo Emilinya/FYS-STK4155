@@ -1,4 +1,3 @@
-from sklearn.model_selection import GridSearchCV
 from sklearn.linear_model import Ridge
 from polyUtils import poly_generator
 from linfitUtils import SplitData
@@ -8,7 +7,7 @@ import numpy as np
 
 np.random.seed(1337)
 optimal_degree = 13
-optimal_lda = 0.0003827494478516307
+optimal_lda = 0.0283
 
 lda_ray = np.logspace(-8, 4, 200)
 x_grid, y_grid, z_grid = get_terrain(600)
