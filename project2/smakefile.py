@@ -7,6 +7,12 @@ problem_dict = {
         "imgs": ["imgs/linfit/plain_plot.svg"],
         "deps": ["utils/linfit_utils.py", "utils/gradient_descent.py"]
     },
+    "ffnn_regression": {
+        "deps": ["utils/linfit_utils.py", "utils/gradient_descent.py", "utils/neural_network.py"]
+    },
+    "ffnn_classification": {
+        "deps": ["utils/linfit_utils.py", "utils/gradient_descent.py", "utils/neural_network.py"]
+    },
 }
 
 
@@ -16,6 +22,7 @@ def py_string(folder, datafiles, imgs, dependancies):
 {folder}: {imgs[0]}
 
 {imgs[0]}: {folder}/{folder}_plot.py {datafiles[0]}
+	mkdir -p {'/'.join(imgs[0].split('/')[:-1])}
 	python3 {folder}/{folder}_plot.py
 
 {datafiles[0]}: {folder}/{folder}_data.py {' '.join(dependancies)}
@@ -33,4 +40,4 @@ all: {' '.join([f for f in problem_dict.keys()])}
     for f, args in problem_dict.items():
         makefile.write(py_string(
             f, args.get("datafiles", [f"{f}/data.dat"]),
-            args.get("imgs", [f"imgs/{f}/img.svg"]), args.get("deps", [])))
+            args.get("imgs", [f"imgs/{f}/plot.svg"]), args.get("deps", [])))

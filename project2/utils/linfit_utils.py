@@ -71,7 +71,7 @@ class SplitData:
         return cls(Data(X_test, y_test), Data(X_train, y_train))
 
     @classmethod
-    def from_1d_polynomial(cls, poly_degree, x_ray, y_ray, normalize=False):
+    def from_1d_polynomial(cls, poly_degree, x_ray, y_ray, normalize=False, test_size=0.2):
         n = len(x_ray)
         m = poly_degree+1
         X = np.zeros((n, m))
@@ -84,10 +84,10 @@ class SplitData:
             data.normalize()
             
 
-        return cls.from_data(data)
+        return cls.from_data(data, test_size)
 
     @classmethod
-    def from_2d_polynomial(cls, poly_degree, x_grid, y_grid, z_grid, normalize=False):
+    def from_2d_polynomial(cls, poly_degree, x_grid, y_grid, z_grid, normalize=False, test_size=0.2):
         x_flat, y_flat = x_grid.flatten(), y_grid.flatten()
         n = len(x_flat)
         m = int((poly_degree + 2) * (poly_degree + 1) / 2)
@@ -101,7 +101,7 @@ class SplitData:
         if normalize:
             data.normalize()
 
-        return cls.from_data(data)
+        return cls.from_data(data, test_size)
 
 class LinFit:
     # a class for linear regression
