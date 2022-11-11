@@ -44,8 +44,8 @@ def plot_schedule_type(schedule_type: str, error_list):
     plt.plot(x_ray, f_ray, label="f(x)")
 
     label_list = [
-        "Analytic", "Plain", "Momentum",
-        "Stochastic", "Momentum + Stochastic",
+        "A", "P", "M",
+        "S", "M + S",
     ]
 
     best_label = None
@@ -55,12 +55,12 @@ def plot_schedule_type(schedule_type: str, error_list):
     for i, (label, beta) in enumerate(zip(label_list, best_beta_grid)):
         poly_ray = np.polynomial.Polynomial(beta)(x_ray)
         MSE = mse(f_ray, poly_ray)
-        if label == "Analytic":
+        if label == "A":
             plt.plot(x_ray, poly_ray, label=f"{label} [MSE={MSE:.3g}]")
             error_list.append(("OLS", schedule_type, label, MSE, "N/A"))
         else:
             plt.plot(
-                x_ray, poly_ray, label=f"{label} [MSE={MSE:.3g}] [$\\nu$={best_step_size_ray[i-1]:.3g}]")
+                x_ray, poly_ray, label=f"{label} [MSE={MSE:.3g}] [$\\eta$={best_step_size_ray[i-1]:.3g}]")
             error_list.append(
                 ("OLS", schedule_type, label, MSE, best_step_size_ray[i-1]))
 
@@ -81,22 +81,22 @@ def plot_schedule_type(schedule_type: str, error_list):
 
     sb.heatmap(
         np.log10(small_mean_grid), cmap="viridis", annot=True, vmax=1,
-        xticklabels=[f"{lda:.3f}" for lda in small_step_size_ray],
-        yticklabels=["PP", "MP", "PS", "MS"],
+        xticklabels=[f"{np.log10(lr):.2f}" for lr in small_step_size_ray],
+        yticklabels=label_list[1:],
         cbar_kws={'label': 'log10(MSE) []'}
     )
-    plt.xlabel("$\\lambda$ []")
+    plt.xlabel("log10(step size) []")
     plt.ylabel("solver type []")
     plt.savefig(f"imgs/linfit/{schedule_type.lower()}_mean.svg")
     plt.clf()
 
     sb.heatmap(
         small_std_grid/small_mean_grid, cmap="viridis", annot=True, vmax=2,
-        xticklabels=[f"{lda:.3f}" for lda in small_step_size_ray],
-        yticklabels=["PP", "MP", "PS", "MS"],
+        xticklabels=[f"{np.log10(lr):.2f}" for lr in small_step_size_ray],
+        yticklabels=label_list[1:],
         cbar_kws={'label': 'std/MSE []'}
     )
-    plt.xlabel("$\\lambda$ []")
+    plt.xlabel("log10(step size) []")
     plt.ylabel("solver type []")
     plt.savefig(f"imgs/linfit/{schedule_type.lower()}_std.svg")
     plt.clf()
@@ -123,7 +123,7 @@ def plot_best_OLS(best_list):
         poly_ray = np.polynomial.Polynomial(beta)(x_ray)
         MSE = mse(f_ray, poly_ray)
         plt.plot(x_ray, poly_ray,
-                 label=f"{nice_str('OLS', schedule, label)} [MSE={MSE:.3g}]")
+                 label=f"{schedule} [MSE={MSE:.3g}]")
 
     plt.legend()
     plt.ylim(-0.25, 0.75)
@@ -156,7 +156,7 @@ def plot_best_Ridge(best_list, error_list):
         poly_ray = np.polynomial.Polynomial(beta)(x_ray)
         MSE = mse(f_ray, poly_ray)
         plt.plot(
-            x_ray, poly_ray, label=f"{nice_str('Ridge', schedule, label)} [MSE={MSE:.3g}] [$\\nu$={step_size:.3g}] [$\\lambda$={lda:.3g}]")
+            x_ray, poly_ray, label=f"{schedule} [MSE={MSE:.3g}] [$\\eta$={step_size:.3g}] [$\\lambda$={lda:.3g}]")
         error_list.append(
             ("Ridge", schedule, label, MSE, step_size))
 
@@ -177,10 +177,9 @@ plot_best_OLS(best_list)
 plot_best_Ridge(best_list, error_list)
 
 
-analytic_error = [error for _, _, step_type, error,
-                  _ in error_list if step_type == "Analytic"][0]
+analytic_error = [error for _, _, step_type, error, _ in error_list if step_type == "A"][0]
 
-error_list = [v for v in error_list if v[2] != "Analytic"]
+error_list = [v for v in error_list if v[2] != "A"]
 error_list.sort(key=lambda e: e[3])
 
 max_str = max([len(nice_str(re, sc, st)) for re, sc, st, _, _ in error_list])

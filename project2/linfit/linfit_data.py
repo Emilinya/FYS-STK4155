@@ -325,7 +325,7 @@ if __name__ == "__main__":
         (0.8979591836734693, 0.8775510204081632, 89),
         (0.9183673469387754, 0.44897959183673464, 21),
         (0.36734693877551017, 0.4897959183673469, 21),
-        (0.7755102040816326, 0.22448979591836732, 13)
+        (1.0, 0.632653061224489, 144)
     ]
 
     # reuse optimal step type from previous runs
@@ -341,4 +341,4 @@ if __name__ == "__main__":
     #     poly_degree, x_ray, f_ray, hyperparams)
 
     # see if Ridge regression can improve approximation for optimal step types
-    Ridge_analyzer(poly_degree, x_ray, f_ray, optimal_step_types, hyperparams)
+    # Ridge_analyzer(poly_degree, x_ray, f_ray, optimal_step_types, hyperparams)

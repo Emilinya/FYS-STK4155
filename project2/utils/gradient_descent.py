@@ -258,7 +258,7 @@ class GradSolver():
                 return None
 
             G += np.outer(grad, grad)
-            Ginv = step_size / (1e-8 + np.sqrt(np.diagonal(G)))
+            Ginv = step_size / (1e-10 + np.sqrt(np.diagonal(G)))
 
             beta += -np.multiply(Ginv, grad)
         return beta
@@ -287,7 +287,7 @@ class GradSolver():
             velocity = mass * velocity + step_size * grad
 
             G += np.outer(velocity, velocity)
-            Ginv = step_size / (1e-8 + np.sqrt(np.diagonal(G)))
+            Ginv = step_size / (1e-10 + np.sqrt(np.diagonal(G)))
 
             beta += -np.multiply(Ginv, velocity)
 
@@ -322,7 +322,7 @@ class GradSolver():
                     return None
 
                 G += np.outer(grad, grad)
-                Ginv = step_size / (1e-8 + np.sqrt(np.diagonal(G)))
+                Ginv = step_size / (1e-10 + np.sqrt(np.diagonal(G)))
 
                 beta += -np.multiply(Ginv, grad)
 
@@ -368,7 +368,7 @@ class GradSolver():
                 velocity = mass * velocity + step_size * grad
 
                 G += np.outer(velocity, velocity)
-                Ginv = step_size / (1e-8 + np.sqrt(np.diagonal(G)))
+                Ginv = step_size / (1e-10 + np.sqrt(np.diagonal(G)))
 
                 beta += -np.multiply(Ginv, velocity)
 
@@ -404,7 +404,7 @@ class GradSolver():
                 return None
 
             s = memlif1*s + (1 - memlif1)*np.outer(grad, grad)
-            sinv = step_size / (1e-8 + np.sqrt(np.diagonal(s)))
+            sinv = step_size / (1e-10 + np.sqrt(np.diagonal(s)))
 
             beta += -np.multiply(sinv, grad)
         return beta
@@ -435,7 +435,7 @@ class GradSolver():
             velocity = mass * velocity + step_size * grad
 
             s = memlif1*s + (1 - memlif1)*np.outer(velocity, velocity)
-            sinv = step_size / (1e-8 + np.sqrt(np.diagonal(s)))
+            sinv = step_size / (1e-10 + np.sqrt(np.diagonal(s)))
 
             beta += -np.multiply(sinv, velocity)
 
@@ -472,7 +472,7 @@ class GradSolver():
                     return None
 
                 s = memlif1*s + (1 - memlif1)*np.outer(grad, grad)
-                sinv = step_size / (1e-8 + np.sqrt(np.diagonal(s)))
+                sinv = step_size / (1e-10 + np.sqrt(np.diagonal(s)))
 
                 beta += -np.multiply(sinv, grad)
 
@@ -520,7 +520,7 @@ class GradSolver():
                 velocity = mass * velocity + step_size * grad
 
                 s = memlif1*s + (1 - memlif1)*np.outer(velocity, velocity)
-                sinv = step_size / (1e-8 + np.sqrt(np.diagonal(s)))
+                sinv = step_size / (1e-10 + np.sqrt(np.diagonal(s)))
 
                 beta += -np.multiply(sinv, velocity)
 
@@ -562,9 +562,9 @@ class GradSolver():
             m = m/(1 - memlif1**t)
             s = s/(1 - memlif2**t)
         
-            sinv = step_size * m / (1e-8 + np.sqrt(np.diagonal(s)))
+            sinv = step_size / (1e-10 + np.sqrt(np.diagonal(s)))
 
-            beta += -np.multiply(sinv, grad)
+            beta += -np.multiply(sinv, m)
         return beta
 
     def adam_momentum_solve(self, lda: float, beta0: np.ndarray, step_size: float, mass: float, max_steps: int):
@@ -599,9 +599,9 @@ class GradSolver():
             m = m/(1 - memlif1**t)
             s = s/(1 - memlif2**t)
         
-            sinv = step_size * m / (1e-8 + np.sqrt(np.diagonal(s)))
+            sinv = step_size / (1e-10 + np.sqrt(np.diagonal(s)))
 
-            beta += -np.multiply(sinv, velocity)
+            beta += -np.multiply(sinv, m)
 
         return beta
 
@@ -642,9 +642,9 @@ class GradSolver():
                 m = m/(1 - memlif1**t)
                 s = s/(1 - memlif2**t)
             
-                sinv = step_size * m / (1e-8 + np.sqrt(np.diagonal(s)))
+                sinv = step_size / (1e-10 + np.sqrt(np.diagonal(s)))
 
-                beta += -np.multiply(sinv, grad)
+                beta += -np.multiply(sinv, m)
 
             # calculate full gradient to see if we are done
             grad = self.grad_C(beta, lda=lda)
@@ -696,9 +696,9 @@ class GradSolver():
                 m = m/(1 - memlif1**t)
                 s = s/(1 - memlif2**t)
             
-                sinv = step_size * m / (1e-8 + np.sqrt(np.diagonal(s)))
+                sinv = step_size / (1e-10 + np.sqrt(np.diagonal(s)))
 
-                beta += -np.multiply(sinv, velocity)
+                beta += -np.multiply(sinv, m)
 
             # calculate full gradient to see if we are done
             grad = self.grad_C(beta, lda=lda)

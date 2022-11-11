@@ -37,7 +37,7 @@ class ActivationFunction:
         if function_type == FunctionType.LEAKY_RELU:
             self.derivative = self.leaky_RELU_derivative_v
             self.function = self.leaky_RELU_v
-        if function_type == FunctionType.SOFTMAX:
+        elif function_type == FunctionType.SOFTMAX:
             self.derivative = self.softmax_d
             self.function = self.softmax_f
         elif function_type == FunctionType.SIGMOID:
@@ -77,7 +77,7 @@ class ActivationFunction:
 
     def softmax_f(self, x):
         exp = np.exp(x)
-        return exp/np.sum(exp, axis=0, keepdims=True)
+        return exp/np.sum(exp, axis=1, keepdims=True)
 
     def softmax_d(self, x):
         softmax = self.softmax_f(x)
@@ -130,27 +130,42 @@ class ActivationFunction:
         return self.epsilon*np.exp(x)
 
 
+class NNType(Enum):
+    REGRESSION = auto()
+    CLASSIFICATION = auto()
+    LOGISTIC_REGRESSION = auto()
+
+
 class NeuralNetwork:
     def __init__(
         self, X_data, Y_data, hidden_neuron_counts=[50], functions=FunctionType.SIGMOID,
-        epochs=10, batch_size=10, learning_rate=0.1, lda=0.0
+        nn_type=NNType.REGRESSION, epochs=10, batch_size=10, learning_rate=0.1, lda=0.0
     ):
-
+        self.nn_type = nn_type
         self.X_data = X_data
         self.Y_data = Y_data
 
         self.n_layers = len(hidden_neuron_counts)+1
 
         self.sigmas = []
-
         if hasattr(functions, "__iter__"):
-            if len(functions) < self.n_layers:
+            if len(functions) < self.n_layers-1:
                 print(
-                    f"NeuralNetwork: expected {self.n_layers} activation functions, but only got {len(functions)}!")
+                    f"NeuralNetwork: expected {self.n_layers-1} activation functions, but only got {len(functions)}!")
                 exit()
             self.sigmas = [ActivationFunction(function) for function in functions]
         else:
             self.sigmas = [ActivationFunction(functions)]*self.n_layers
+
+        if self.nn_type == NNType.REGRESSION:
+            self.sigmas += [ActivationFunction(FunctionType.UNIT)]
+        elif self.nn_type == NNType.CLASSIFICATION:
+            self.sigmas += [ActivationFunction(FunctionType.SIGMOID)]
+        elif self.nn_type == NNType.LOGISTIC_REGRESSION:
+            self.sigmas += [ActivationFunction(FunctionType.SOFTMAX)]
+        else:
+            print("NeuralNetwork: unknown nn_type: {}", self.nn_type)
+            exit()
 
         self.hidden_neuron_counts = hidden_neuron_counts
         self.n_inputs, self.n_features = X_data.shape
@@ -256,11 +271,30 @@ class NeuralNetwork:
             self.biases[i] -= bias_sinv * self.bias_velocities[i]
 
     def predict(self, X):
-        return self.feed_forward_out(X)
+        output = self.feed_forward_out(X)
+        if self.nn_type == NNType.REGRESSION:
+            return output
+        elif self.nn_type == NNType.CLASSIFICATION:
+            if np.max(output) > 1 or np.min(output) < 0:
+                print("NeuralNetwork: type is classification, but prediction ∉ [0, 1]")
+            return np.round(output)
+        elif self.nn_type == NNType.LOGISTIC_REGRESSION:
+            if np.max(output) > 1 or np.min(output) < 0:
+                print("NeuralNetwork: type is logistic regression, but prediction ∉ [0, 1]")
+            return np.argmax(output, axis=1)
+        print("NeuralNetwork: bad type!")
+        return output
 
     def loss(self):
         # is this loss?
-        return np.sum((self.predict(self.X_data) - self.Y_data)**2)
+        if self.nn_type == NNType.REGRESSION:
+            return np.sum((self.predict(self.X_data) - self.Y_data)**2) / self.n_inputs
+        elif self.nn_type == NNType.CLASSIFICATION:
+            return np.sum(self.predict(self.X_data) != self.Y_data) / self.n_inputs
+        elif self.nn_type == NNType.LOGISTIC_REGRESSION:
+            Y_label = np.argmax(self.Y_data, axis=1)
+            return np.sum(self.predict(self.X_data) != Y_label) / self.n_inputs
+
 
     def train(self, silent=False):
         data_indices = np.arange(self.n_inputs)

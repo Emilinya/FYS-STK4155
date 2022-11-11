@@ -66,7 +66,10 @@ class SplitData:
         return SplitData(self.test_data.copy(), self.train_data.copy())
 
     @classmethod
-    def from_data(cls, data, test_size=0.2):
+    def from_data(cls, data, normalize=False, test_size=0.2):
+        if normalize:
+            data.normalize()
+
         X_train, X_test, y_train, y_test = train_test_split(data.X, data.y, test_size=test_size)
         return cls(Data(X_test, y_test), Data(X_train, y_train))
 
@@ -78,13 +81,8 @@ class SplitData:
     
         for d in range(m):
             X[:, d] = x_ray**d
-            
-        data = Data(X, y_ray)
-        if normalize:
-            data.normalize()
-            
 
-        return cls.from_data(data, test_size)
+        return cls.from_data(Data(X, y_ray), normalize, test_size)
 
     @classmethod
     def from_2d_polynomial(cls, poly_degree, x_grid, y_grid, z_grid, normalize=False, test_size=0.2):
@@ -96,12 +94,8 @@ class SplitData:
         for i, (xd, yd) in enumerate(power_itr(poly_degree)):
             X[:, i] = x_flat**xd * y_flat**yd
         y = z_grid.flatten()
-        
-        data = Data(X, y)
-        if normalize:
-            data.normalize()
 
-        return cls.from_data(data, test_size)
+        return cls.from_data(Data(X, y), normalize, test_size)
 
 class LinFit:
     # a class for linear regression

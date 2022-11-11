@@ -2,5 +2,6 @@
 */*/__pycache__
 */_minted*
 */project[1-9]*
+*/imgs/pdfimgs/**
 *.stamp
 *.dat

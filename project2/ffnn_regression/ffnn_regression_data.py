@@ -2,10 +2,11 @@
 # from tensorflow.keras.models import Sequential
 # from tensorflow.keras.layers import Dense           
 # from tensorflow.keras import optimizers          
-# from tensorflow.keras import regularizers          
-from sklearn.model_selection import GridSearchCV
-from sklearn.linear_model import Ridge
+# from tensorflow.keras import regularizers     
 import numpy as np
+
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 # hack to include code from utils
 import sys
@@ -29,7 +30,7 @@ def ffnn_predict(
     function_type: FunctionType, do_gridsearch = False
 ):
     neuron_counts = [10, 10, 10]
-    functions = [function_type]*len(neuron_counts) + [FunctionType.UNIT]
+    functions = [function_type]*len(neuron_counts)
     neural_network = NeuralNetwork(
         x_train, y_train, functions=functions,
         learning_rate=0.005994842503189409,
@@ -37,8 +38,9 @@ def ffnn_predict(
         batch_size=20, hidden_neuron_counts=neuron_counts
     )
 
-    learning_rate_ray = np.logspace(-4, 0, 10)
-    lda_ray = np.append([0], np.logspace(-8, 0, 10))
+    resolution = 10
+    learning_rate_ray = np.logspace(-4, 0, resolution)
+    lda_ray = np.append([0], np.logspace(-8, 0, resolution))
 
     # Only do grid search when other hyperparameters have changed
     if do_gridsearch:
@@ -67,17 +69,16 @@ def ffnn_predict(
 
                 neural_network.create_biases_and_weights()
         print(
-            f"\nOptimal learning rate: {optimal_learning_rate}, lambda: {optimal_lambda}")
+            f"\nOptimal learning rate: {optimal_learning_rate}, optimal lambda: {optimal_lambda}")
 
 
-        if function_type == FunctionType.SIGMOID:
-            with open("ffnn_regression/data_grid.dat", "w") as datafile:
-                datafile.write(f"{error_grid.shape[0]} Error grid\n")
-                np.savetxt(datafile, error_grid)
-                datafile.write(f"{learning_rate_ray.size} Learning rates\n")
-                np.savetxt(datafile, learning_rate_ray)
-                datafile.write(f"{lda_ray.size} Lambdas\n")
-                np.savetxt(datafile, lda_ray)
+        with open(f"ffnn_regression/data_{function_type.name}_grid.dat", "w") as datafile:
+            datafile.write(f"{error_grid.shape[0]} Error grid\n")
+            np.savetxt(datafile, error_grid)
+            datafile.write(f"{learning_rate_ray.size} Learning rates\n")
+            np.savetxt(datafile, learning_rate_ray)
+            datafile.write(f"{lda_ray.size} Lambdas\n")
+            np.savetxt(datafile, lda_ray)
 
         neural_network.learning_rate = optimal_learning_rate
         neural_network.lda = optimal_lambda
@@ -98,18 +99,15 @@ y_test = split_data.test_data.y.reshape(-1, 1)
 
 # neural network approximations
 
-do_gridsearch = False
+do_gridsearch = True
 sigmoid_ffnn_pred = ffnn_predict(x_train, y_train, x_test, y_test, FunctionType.SIGMOID, do_gridsearch)
 RELU_ffnn_pred = ffnn_predict(x_train, y_train, x_test, y_test, FunctionType.RELU, do_gridsearch)
 leaky_RELU_ffnn_pred = ffnn_predict(x_train, y_train, x_test, y_test, FunctionType.LEAKY_RELU, do_gridsearch)
 
 # polynomial approximation
 
-gridsearch = GridSearchCV(estimator=Ridge(), param_grid=dict(alpha=np.append([0], np.logspace(-8, 0, 10))))
-gridsearch.fit(*split_data.train_data)
 linfit = LinFit(split_data)
 ols_pred = linfit.get_fit()
-ridge_pred = linfit.get_fit(linfit.get_beta_ridge(gridsearch.best_params_['alpha']))
 
 # tensorflow approximation | Disabled because of problems when importing tensorflow
 # model = Sequential()
@@ -125,6 +123,6 @@ np.savetxt(
     "ffnn_regression/data.dat",
     np.array([
         x_test.reshape(-1), y_test.reshape(-1), sigmoid_ffnn_pred, RELU_ffnn_pred,
-        leaky_RELU_ffnn_pred, ols_pred, ridge_pred
+        leaky_RELU_ffnn_pred, ols_pred
     ])
 )

@@ -13,6 +13,9 @@ problem_dict = {
     "ffnn_classification": {
         "deps": ["utils/linfit_utils.py", "utils/gradient_descent.py", "utils/neural_network.py"]
     },
+    "ffnn_logreg": {
+        "deps": ["utils/linfit_utils.py", "utils/gradient_descent.py", "utils/neural_network.py"]
+    },
 }
 
 
