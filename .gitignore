@@ -5,3 +5,4 @@
 */imgs/pdfimgs/**
 *.stamp
 *.dat
+*.npy
