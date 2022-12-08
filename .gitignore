@@ -6,3 +6,4 @@
 *.stamp
 *.dat
 *.npy
+*.npz
