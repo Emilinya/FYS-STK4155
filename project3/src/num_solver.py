@@ -55,7 +55,7 @@ def get_anasol(dx, T):
 
 def main():
     timer = Timer()
-    T = 0.5
+    T = np.log(100) / (np.pi**2) 
 
     for dx in [1e-1, 1e-2]:
         print(f"dx={dx}")
@@ -66,14 +66,14 @@ def main():
         t_ray, num_u_grid = heat_solver(dx, 1, T, u0)
         print(f"  time: {timer.get_pretty()}")
 
-        np.save(f"data/num_solver_data/t_ray_dx={dx}.npy", t_ray)
-        np.save(f"data/num_solver_data/num_u_grid_dx={dx}.npy", num_u_grid)
+        np.save(f"data/num_solver/t_ray_dx={dx}.npy", t_ray)
+        np.save(f"data/num_solver/num_u_grid_dx={dx}.npy", num_u_grid)
 
         ana_u_grid = get_anasol(dx, T)
         print(
             f"  mean absolute error: {np.mean(np.abs(num_u_grid - ana_u_grid)):.3e}")
 
-        np.save(f"data/num_solver_data/ana_u_grid_dx={dx}.npy", ana_u_grid)
+        np.save(f"data/num_solver/ana_u_grid_dx={dx}.npy", ana_u_grid)
 
 
 if __name__ == "__main__":
