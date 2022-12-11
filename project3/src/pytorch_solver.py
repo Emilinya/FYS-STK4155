@@ -122,7 +122,7 @@ def main():
         np.savez(
             f"data/pytorch_solver/hn={num_hidden_neurons}_tp=SIGMOID.npz",
             x_ray=x_grid_test[0, :].numpy(), t_ray=t_grid_test[:, 0].numpy(),
-            u_ffnn_grid=u_ffnn_grid.numpy(), u_ana_grid=u_ana_grid.numpy()
+            u_pytorch_grid=u_ffnn_grid.numpy(), u_ana_grid=u_ana_grid.numpy()
         )
 
 

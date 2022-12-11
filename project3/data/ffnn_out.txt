@@ -1,0 +1,63 @@
+testing NN with 10 hidden neurons and the SIGMOID activation funcion
+100/100 [loss=69.65360, min_loss=0.28138]
+
+Found learning_rate=0.21544346900318845, lda=7.498942093324559e-08
+ 0/10 [loss=25.76816]
+ 1/10 [loss=0.21412]
+ 2/10 [loss=0.13128]
+ 3/10 [loss=0.13135]
+ 4/10 [loss=0.11073]
+ 5/10 [loss=0.07683]
+ 6/10 [loss=0.06321]
+ 7/10 [loss=0.04839]
+ 8/10 [loss=0.08359]
+ 9/10 [loss=0.04436]
+10/10 [loss=0.03923]
+
+testing NN with 10 hidden neurons and the LEAKY_RELU activation funcion
+100/100 [loss=36.42095, min_loss=1.56241]
+
+Found learning_rate=0.004641588833612782, lda=7.498942093324559e-08
+ 0/10 [loss=90.62913]
+ 1/10 [loss=7.15468]
+ 2/10 [loss=7.45559]
+ 3/10 [loss=7.52721]
+ 4/10 [loss=7.54408]
+ 5/10 [loss=7.61461]
+ 6/10 [loss=7.61438]
+ 7/10 [loss=7.61243]
+ 8/10 [loss=7.61232]
+ 9/10 [loss=7.61850]
+10/10 [loss=3.41651]
+
+testing NN with 100 hidden neurons and the SIGMOID activation funcion
+100/100 [loss=206.18698, min_loss=0.51932]
+
+Found learning_rate=0.05994842503189409, lda=0.0017782794100389228
+ 0/10 [loss=65.66695]
+ 1/10 [loss=8.40835]
+ 2/10 [loss=nan]
+ 3/10 [loss=nan]
+ 4/10 [loss=nan]
+ 5/10 [loss=nan]
+ 6/10 [loss=nan]
+ 7/10 [loss=nan]
+ 8/10 [loss=nan]
+ 9/10 [loss=nan]
+10/10 [loss=0.57581]
+
+testing NN with 100 hidden neurons and the LEAKY_RELU activation funcion
+100/100 [loss=40.72905, min_loss=0.80205]
+
+Found learning_rate=0.016681005372000592, lda=0.0017782794100389228
+ 0/10 [loss=35.13467]
+ 1/10 [loss=27.17166]
+ 2/10 [loss=nan]
+ 3/10 [loss=nan]
+ 4/10 [loss=nan]
+ 5/10 [loss=nan]
+ 6/10 [loss=nan]
+ 7/10 [loss=nan]
+ 8/10 [loss=nan]
+ 9/10 [loss=nan]
+10/10 [loss=0.78120]

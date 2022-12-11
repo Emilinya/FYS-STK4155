@@ -1,7 +1,6 @@
 from scipy.sparse import diags
-import numpy as np
-
 from utils import Timer
+import numpy as np
 
 
 def init(dx, L, T):
@@ -55,7 +54,7 @@ def get_anasol(dx, T):
 
 def main():
     timer = Timer()
-    T = np.log(100) / (np.pi**2) 
+    T = np.log(100) / (np.pi**2)
 
     for dx in [1e-1, 1e-2]:
         print(f"dx={dx}")
@@ -63,17 +62,13 @@ def main():
         u0[-1] = 0
 
         timer.restart()
-        t_ray, num_u_grid = heat_solver(dx, 1, T, u0)
+        t_ray, u_num_grid = heat_solver(dx, 1, T, u0)
         print(f"  time: {timer.get_pretty()}")
 
-        np.save(f"data/num_solver/t_ray_dx={dx}.npy", t_ray)
-        np.save(f"data/num_solver/num_u_grid_dx={dx}.npy", num_u_grid)
+        u_ana_grid = get_anasol(dx, T)
 
-        ana_u_grid = get_anasol(dx, T)
-        print(
-            f"  mean absolute error: {np.mean(np.abs(num_u_grid - ana_u_grid)):.3e}")
-
-        np.save(f"data/num_solver/ana_u_grid_dx={dx}.npy", ana_u_grid)
+        np.savez(f"data/num_solver/dx={dx}.npz", t_ray=t_ray,
+                 u_num_grid=u_num_grid, u_ana_grid=u_ana_grid)
 
 
 if __name__ == "__main__":

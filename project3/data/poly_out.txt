@@ -1,0 +1,28 @@
+degree=0
+  initial cost: 79547.75938399487
+  2/5, |grad| = 6.270e-22
+  final cost: 13.828691281815649
+  time: 434 ms
+degree=1
+  initial cost: 50663.50552670205
+  2/5, |grad| = 3.456e-17
+  final cost: 10.586233733054183
+degree=2
+  400/400, |grad| = 3.842e+01
+  time: 4 m 32 s 150 ms
+degree=3
+  initial cost: 11486.343359638722
+  400/400, |grad| = 2.295e+00
+  final cost: 5.288320627555618
+  time: 8 m 27 s 94 ms
+degree=4
+  initial cost: 5005.5000454182045
+  400/400, |grad| = 8.896e+00
+  final cost: 23.969407886563108
+  time: 12 m 56 s 482 ms
+degree=5
+  initial cost: 4913.595264683795
+  400/400, |grad| = 1.467e+01
+  final cost: 59.37939397420154
+  final cost: 59.37939397420154
+  time: 19 m 5 s 135 ms
