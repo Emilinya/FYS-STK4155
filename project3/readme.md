@@ -1,3 +1,5 @@
+# Project 3
+
 The code for this project is in the `src` folder. The programs ending in `_solver` create data in the `data`
 folder, while the programs ending in `_plotter` create images in the `imgs` folder. The file `utils.py`
 has a simple timer class to time things.
