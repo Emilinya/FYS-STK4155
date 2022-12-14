@@ -6,6 +6,10 @@ from ffnn_solver_plotter import f2typ
 
 
 def rank_types(err_type, data_files):
+    """
+    Rank error of results in data_files based on method given in err_type.
+    err_type can be 'abs' for absolute error,  or 'rel' for relative error.
+    """
     ranks = []
     for folder_files in data_files:
         folder_name = folder_files[0].split("/")[1].split("_")[0]
@@ -28,7 +32,10 @@ def rank_types(err_type, data_files):
             if err_type == "abs":
                 score = np.mean(np.abs(u_ana_grid - u_calc_grid))
             else:
-                score = np.mean(np.abs(u_ana_grid - u_calc_grid)/(np.abs(u_ana_grid)+1e-14))*100
+                score = np.mean(
+                    np.abs(u_ana_grid - u_calc_grid) /
+                    (np.abs(u_ana_grid) + 1e-14)
+                ) * 100
 
             ranks.append((label, score))
     ranks.sort(key=lambda v: v[1])
@@ -41,7 +48,12 @@ def rank_types(err_type, data_files):
     for label, score in ranks:
         print(f"{label:<{max_label_len}} │ {score:>11.7f}")
 
+
 def plottify(err_type, data_files):
+    """
+    Create figures of the error of results in data_files as a function of time.
+    err_type can be 'abs' for absolute error, or 'rel' for relative error.
+    """
     plt.figure(tight_layout=True, figsize=(10, 6))
     plt.ticklabel_format(scilimits=(-2, 2))
     for folder_files in data_files:
@@ -58,7 +70,10 @@ def plottify(err_type, data_files):
             if err_type == "abs":
                 err_t = np.mean(np.abs(u_ana_grid - u_calc_grid), axis=1)
             else:
-                err_t = np.mean(np.abs(u_ana_grid - u_calc_grid)/(np.abs(u_ana_grid)+1e-14), axis=1)
+                err_t = np.mean(
+                    np.abs(u_ana_grid - u_calc_grid) /
+                    (np.abs(u_ana_grid) + 1e-14), axis=1
+                )
 
             if folder_name == "num":
                 marker = "-"
@@ -81,8 +96,10 @@ def plottify(err_type, data_files):
 
     _, ymax = plt.ylim()
     plt.ylim(1e-6, ymax)
-    plt.legend(loc='lower center', bbox_to_anchor=(0.36, -0.01),
-          ncol=2, fancybox=True)
+    plt.legend(
+        loc='lower center', bbox_to_anchor=(0.36, -0.01),
+        ncol=2, fancybox=True
+    )
     plt.yscale("log")
     plt.xlabel("t []")
     if err_type == "abs":
@@ -92,8 +109,12 @@ def plottify(err_type, data_files):
     plt.savefig(f"imgs/multi/{err_type}_err.svg")
     plt.clf()
 
+
 def main():
-    data_folders = ["data/ffnn_solver", "data/num_solver", "data/pytorch_solver", "data/poly_solver"]
+    data_folders = [
+        "data/ffnn_solver", "data/num_solver",
+        "data/pytorch_solver", "data/poly_solver"
+    ]
     data_files = [
         [data_folder+"/"+f for f in [v[2] for v in os.walk(data_folder)][0]]
         for data_folder in data_folders
@@ -103,6 +124,7 @@ def main():
     plottify("abs", data_files)
     rank_types("rel", data_files)
     rank_types("abs", data_files)
+
 
 if __name__ == "__main__":
     plt.rcParams['font.size'] = '12'

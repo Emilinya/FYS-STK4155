@@ -4,6 +4,7 @@ import numpy as np
 
 
 def init(dx, L, T):
+    """Create dt, Nx, and Nt from dx, L, and T."""
     dt = 0.5 * dx ** 2  # stability condition
 
     Nx = int(round(L / dx, 10)) + 1
@@ -13,11 +14,13 @@ def init(dx, L, T):
 
 
 def tridiag(n, a, b, c):
+    """Create a tridiagonal nxn matrix with signature (a, b, c)."""
     k = [np.full(n-1, a), np.full(n, b), np.full(n-1, c)]
     return diags(k, [-1, 0, 1])
 
 
 def heat_solver(dx, L, T, u0):
+    """Solve the heat equation using the forward Euler scheme."""
     dx, dt, Nx, Nt = init(dx, L, T)
 
     u_grid = np.zeros((Nt, Nx))
@@ -41,6 +44,7 @@ def heat_solver(dx, L, T, u0):
 
 
 def get_anasol(dx, T):
+    """Get analytical solution to the heat equation."""
     def u(x, t):
         return np.exp(-np.pi**2 * t)*np.sin(np.pi * x)
 
@@ -67,8 +71,10 @@ def main():
 
         u_ana_grid = get_anasol(dx, T)
 
-        np.savez(f"data/num_solver/dx={dx}.npz", t_ray=t_ray,
-                 u_num_grid=u_num_grid, u_ana_grid=u_ana_grid)
+        np.savez(
+            f"data/num_solver/dx={dx}.npz", t_ray=t_ray,
+            u_num_grid=u_num_grid, u_ana_grid=u_ana_grid
+        )
 
 
 if __name__ == "__main__":

@@ -5,12 +5,14 @@ from utils import Timer
 
 
 def power_itr(d):
+    """Iterator that gives the exponents of a 2D degree d polynomial."""
     for k in range(d+1):
         for i in range(k+1):
             yield (k-i, i)
 
 
 def poly(x, t, coeffs):
+    """Evaluate 2D polynomial with coefficients given by 'coeffs'."""
     n = coeffs.size
     degree = int((np.sqrt(8*n + 1) - 3) / 2)
     assert (degree + 2) * (degree + 1) / 2 == n
@@ -19,14 +21,17 @@ def poly(x, t, coeffs):
 
 
 def trial_function(x, t, coeffs):
+    """Trial function that satisfies our initial conditions."""
     return np.sin(np.pi * x) + x*(1-x)*t*poly(x, t, coeffs)
 
 
 def u_analytic(x, t):
+    """Get analytical solution to the heat equation."""
     return np.exp(-np.pi**2 * t) * np.sin(np.pi * x)
 
 
 def cost_function_generator(x_grid, t_grid):
+    """Generate the cost function as a function of coefficients."""
     du_dt = autograd.elementwise_grad(trial_function, 1)
     d2u_dx2 = autograd.elementwise_grad(
         autograd.elementwise_grad(trial_function, 0), 0
@@ -42,6 +47,7 @@ def cost_function_generator(x_grid, t_grid):
 
 
 def hess_descent(initial_coeffs, cost_gradient, cost_hessian):
+    """Find optimal coefficients using Newton's method."""
     coeffs = initial_coeffs.copy()
 
     iterations = 5
@@ -61,6 +67,7 @@ def hess_descent(initial_coeffs, cost_gradient, cost_hessian):
 
 
 def grad_descent(initial_coeffs, cost_gradient):
+    """Find optimal coefficients using momentum gradient descent."""
     coeffs = initial_coeffs.copy()
     velocity = np.zeros_like(coeffs)
 
@@ -88,6 +95,10 @@ def grad_descent(initial_coeffs, cost_gradient):
 
 
 def get_optimal_prameters(degree, prev_coeffs, cost_function_test, cost_grad, cost_hess):
+    """
+    Find optimal coefficients using either Netwon's method or momentum gradient descent.
+    Newton's method if degree < 2, momentum gradient descent if degree >= 2.
+    """
     n_coeffs = int((degree + 2) * (degree + 1) / 2)
     initial_coeffs = np.ones(n_coeffs)
     if not prev_coeffs is None:

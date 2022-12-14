@@ -1,6 +1,11 @@
 import time
 
+
 def prettify_ms(ms):
+    """
+    Turn time in ms into a nice string.
+    Example: 149321 ms -> 2 m 29 s 321 ms
+    """
     if (ms > 1000):
         s = int(ms / 1000)
         if (s > 60):
@@ -18,10 +23,13 @@ def prettify_ms(ms):
     else:
         return f"{ms:.3g} ms"
 
+
 class Timer:
+    """Simple class for timing things."""
+
     def __init__(self):
         self.start = time.time()
-    
+
     def get_ms(self):
         return (time.time() - self.start) * 1000
 

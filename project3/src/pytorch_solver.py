@@ -7,11 +7,13 @@ import numpy as np
 
 
 def trial_function(x, t, model: nn.Sequential):
+    """Trial function that satisfies our initial conditions."""
     network_out = model.forward(torch.cat((x, t), 1))
     return torch.sin(torch.pi * x) + x * (1 - x) * t * network_out
 
 
 def loss_function(x, t, model: nn.Sequential):
+    """Calculate how far the trial function is from satisfying the heat equation."""
     x.requires_grad = True
     t.requires_grad = True
 
@@ -35,6 +37,7 @@ def train_model(
     dataloader: DataLoader, epochs,
     model: nn.Sequential, optimizer: torch.optim.Optimizer
 ):
+    """Train model to minimize the loss function."""
     min_loss = float("infinity")
     optimal_model = copy.deepcopy(model)
 
@@ -66,6 +69,7 @@ def train_model(
 
 
 def u_analytic(x, t):
+    """Get analytical solution to the heat equation."""
     return np.exp(-np.pi**2 * t) * np.sin(np.pi * x)
 
 
@@ -114,7 +118,7 @@ def main():
     # train model
     train_model(train_dataloader, epochs, model, optimizer)
 
-    # test model
+    # test model and save results to file
     with torch.no_grad():
         u_ffnn_grid = trial_function(x_flat_test, t_flat_test, model).reshape(Nx, Nt)
         u_ana_grid = u_analytic(x_grid_test, t_grid_test)

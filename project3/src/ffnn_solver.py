@@ -15,6 +15,8 @@ class FunctionType(Enum):
 
 
 class ActivationFunction:
+    """Class abstracting an activation function of type FunctionType."""
+
     def __init__(self, function_type: FunctionType):
         self.epsilon = 1e-2
         self.set_type(function_type)
@@ -59,6 +61,7 @@ class ActivationFunction:
 
 
 def neural_network(params, x_grid, t_grid, activation_function):
+    """Get the output of a simple feed forward neural network with one hidden layer."""
     w_hidden, b_hidden, w_out, b_out = params
 
     # input layer
@@ -78,8 +81,8 @@ def neural_network(params, x_grid, t_grid, activation_function):
     return z_output
 
 
-# trial solution that satisfies initial conditions
 def u_trial(x, t, params, activation_function):
+    """Trial function that satisfies our initial conditions."""
     neural_network_out = neural_network(
         params, x, t, activation_function
     ).reshape(x.shape)
@@ -88,6 +91,7 @@ def u_trial(x, t, params, activation_function):
 
 
 def cost_function(P, x_grid, t_grid, u_t_diff_t, u_t_diff_x2, activation_function):
+    """Calculate how far the trial function is from satisfying the heat equation."""
     err_sqr = (
         u_t_diff_t(x_grid, t_grid, P, activation_function)
         - u_t_diff_x2(x_grid, t_grid, P, activation_function)
@@ -99,6 +103,11 @@ def solve_ode_neural_network(
     x_grid, t_grid, num_neurons_hidden, epochs, batch_size,
     learning_rate, activation_function, lda=0, silent=False
 ):
+    """
+    Use gradient descent to find the parameters that minimize
+    the cost function, and thus solves the ode.
+    """
+
     # create random parameters
     w_hidden = npr.randn(num_neurons_hidden, 2)
     b_hidden = npr.randn(num_neurons_hidden, 1)
@@ -127,7 +136,7 @@ def solve_ode_neural_network(
 
     for i in range(epochs):
         for j in range(iterations):
-            # pick datapoints with replacement
+            # pick datapoints without replacement
             chosen_datapoints = np.unravel_index(np.random.choice(
                 data_indices, size=batch_size, replace=False
             ), x_grid.shape)
@@ -183,6 +192,8 @@ def solve_ode_neural_network(
 
 
 class NNDiffEqSolver:
+    """Class that wraps around 'solve_ode_neural_network' to create a better api."""
+
     def __init__(
         self, num_neurons_hidden, function_type
     ):
@@ -221,6 +232,11 @@ def gridsearch(
     learning_rate_ray, lda_ray, solver: NNDiffEqSolver,
     epochs, batch_size
 ):
+    """
+    Find the learning rate and lambda value that minimizes the
+    cost function the best using a gridsearch.
+    """
+
     optimal_lda = None
     optimal_learning_rate = None
     min_loss = float("infinity")
@@ -250,6 +266,7 @@ def gridsearch(
 
 
 def u_analytic(x, t):
+    """Get analytical solution to the heat equation."""
     return np.exp(-np.pi**2 * t) * np.sin(np.pi * x)
 
 
@@ -258,6 +275,10 @@ def test_network(
     learning_rate_ray, lda_ray, search_epochs, train_epochs,
     batch_size, num_hidden_neurons, function_type: FunctionType
 ):
+    """
+    Do a gridsearch, and then train network with the optimal learning rate and lambda value.
+    Then test the network, and save the result to a file.
+    """
     print(
         f"testing NN with {num_hidden_neurons} hidden neurons "
         + f"and the {function_type.name} activation funcion"

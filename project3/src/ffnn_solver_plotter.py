@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 
 
 def f2typ(filename):
+    """Find hidden neuron count and activation function from filename."""
     hidden_neurons, *activation_function = filename.split(".npz")[0].split("_")
     activation_function = "_".join(activation_function)
 
@@ -13,7 +14,9 @@ def f2typ(filename):
 
 def main():
     datafiles = [v[2] for v in os.walk("data/ffnn_solver")][0]
-    data_pairs = [(f2typ(f), np.load("data/ffnn_solver/"+f)) for f in datafiles]
+    data_pairs = [
+        (f2typ(f), np.load("data/ffnn_solver/"+f)) for f in datafiles
+    ]
 
     x_ray = data_pairs[0][1]["x_ray"]
     t_ray = data_pairs[0][1]["t_ray"]
@@ -76,7 +79,9 @@ def main():
     for (hn, tp), data in data_pairs:
         sb.heatmap(
             np.log10(data["loss_grid"]), fmt=".2f", cmap="viridis", annot=True, vmax=2,
-            xticklabels=[f"{np.log10(lr):.2f}" for lr in data["learning_rate_ray"]],
+            xticklabels=[
+                f"{np.log10(lr):.2f}" for lr in data["learning_rate_ray"]
+            ],
             yticklabels=[f"{np.log10(lda):.2f}" for lda in data["lda_ray"]],
             cbar_kws={'label': 'log10(error) []'}
         )
@@ -85,6 +90,7 @@ def main():
         plt.ylabel("log10($\\lambda$) []")
         plt.savefig(f"imgs/ffnn_solver/{hn=}_{tp=}_loss.svg")
         plt.clf()
+
 
 if __name__ == "__main__":
     plt.rcParams['font.size'] = '14'

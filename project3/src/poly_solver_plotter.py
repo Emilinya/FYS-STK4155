@@ -4,6 +4,7 @@ import os
 
 
 def f2d(filename):
+    """Find polynomial degree from filename."""
     return float(filename.split("=")[1].split(".npz")[0])
 
 

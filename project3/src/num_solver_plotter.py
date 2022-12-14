@@ -4,6 +4,7 @@ import os
 
 
 def f2dx(filename):
+    """Find dx from filename."""
     return float(filename.split("=")[1].split(".npz")[0])
 
 
